@@ -1,0 +1,216 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Define struct for student record
+struct student {
+    char name[50];
+    char roll_no[20];
+    int attended_classes;
+    int missed_classes;
+    float attendance;
+};
+
+// Declare global variables
+int num_students = 0;
+struct student students[100];
+
+// Function prototypes
+void login();
+void insert_student();
+void display_all();
+void search();
+void delete_student();
+void modify_student();
+void calculate_attendance(struct student *s);
+
+// Main function
+int main() {
+    int choice;
+
+    // Login module
+    login();
+
+    // Menu loop
+    while (1) {
+        printf("\nSelect an option:\n");
+        printf("1. Insert student details\n");
+        printf("2. Display all details\n");
+        printf("3. Search\n");
+        printf("4. Delete student\n");
+        printf("5. Modify student details\n");
+        printf("6. Exit\n");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                insert_student();
+                break;
+            case 2:
+                display_all();
+                break;
+            case 3:
+                search();
+                break;
+            case 4:
+                delete_student();
+                break;
+            case 5:
+                modify_student();
+                break;
+            case 6:
+                exit(0);
+            default:
+                printf("Invalid choice\n");
+        }
+    }
+
+    return 0;
+}
+
+// Login module
+void login() {
+    char username[20], password[20];
+
+    printf("Enter username: ");
+    scanf("%s", username);
+
+    printf("Enter password: ");
+    scanf("%s", password);
+
+    // Check if username and password are correct
+    // In this example, the username is "admin" and the password is "password"
+    if (strcmp(username, "admin") != 0 || strcmp(password, "password") != 0) {
+        printf("Invalid username or password\n");
+        exit(0);
+    }
+}
+
+// Insert student details
+void insert_student() {
+    struct student s;
+
+    printf("\nEnter name: ");
+    scanf("%s", s.name);
+
+    printf("Enter roll number: ");
+    scanf("%s", s.roll_no);
+
+    printf("Enter number of classes attended: ");
+    scanf("%d", &s.attended_classes);
+
+    printf("Enter number of classes missed: ");
+    scanf("%d", &s.missed_classes);
+
+    calculate_attendance(&s);
+
+    students[num_students++] = s;
+
+    printf("Student details inserted successfully\n");
+}
+
+// Display all student details
+void display_all() {
+    if (num_students == 0) {
+        printf("No records found\n");
+        return;
+    }
+
+    printf("\n%-20s%-20s%-20s%-20s%-20s\n", "Name", "Roll No.", "Attended Classes", "Missed Classes", "Attendance");
+
+    for (int i = 0; i < num_students; i++) {
+        printf("%-20s%-20s%-20d%-20d%-20.2f%%\n", students[i].name, students[i].roll_no, students[i].attended_classes,
+               students[i].missed_classes, students[i].attendance);
+    }
+}
+
+// Search for a student record
+void search() {
+    char roll_no[20];
+    int found =0;
+    int flag = 0;
+    printf("\nEnter roll number to search: ");
+	scanf("%s", roll_no);
+	
+	for (int i = 0; i < num_students; i++) {
+	    if (strcmp(students[i].roll_no, roll_no) == 0) {
+	        printf("\n%-20s%-20s%-20s%-20s%-20s\n", "Name", "Roll No.", "Attended Classes", "Missed Classes", "Attendance");
+	        printf("%-20s%-20s%-20d%-20d%-20.2f%%\n", students[i].name, students[i].roll_no, students[i].attended_classes,
+	               students[i].missed_classes, students[i].attendance);
+	        flag = 1;
+	        break;
+	    }
+	}
+	if (flag == 0) {
+	    printf("Record not found\n");
+	}
+}
+// Delete a student record
+void delete_student() {
+char roll_no[20];
+int found = 0;
+printf("\nEnter roll number to delete: ");
+scanf("%s", roll_no);
+
+for (int i = 0; i < num_students; i++) {
+    if (strcmp(students[i].roll_no, roll_no) == 0) {
+        found = 1;
+
+        for (int j = i; j < num_students - 1; j++) {
+            students[j] = students[j + 1];
+        }
+
+        num_students--;
+
+        printf("Record deleted successfully\n");
+        break;
+    }
+}
+
+if (found == 0) {
+    printf("Record not found\n");
+}
+}
+// Modify a student record
+void modify_student() {
+char roll_no[20];
+int found = 0;
+printf("\nEnter roll number to modify: ");
+scanf("%s", roll_no);
+
+for (int i = 0; i < num_students; i++) {
+    if (strcmp(students[i].roll_no, roll_no) == 0) {
+        found = 1;
+
+        printf("\nEnter new name: ");
+        scanf("%s", students[i].name);
+
+        printf("Enter new roll number: ");
+        scanf("%s", students[i].roll_no);
+
+        printf("Enter new number of classes attended: ");
+        scanf("%d", &students[i].attended_classes);
+
+        printf("Enter new number of classes missed: ");
+        scanf("%d", &students[i].missed_classes);
+
+        calculate_attendance(&students[i]);
+
+        printf("Record modified successfully\n");
+        break;
+    }
+}
+
+if (found == 0) {
+    printf("Record not found\n");
+}
+}
+// Calculate attendance based on the number of classes attended and missed
+void calculate_attendance(struct student *s) {
+float total_classes = s->attended_classes + s->missed_classes;
+if (total_classes == 0) {
+    s->attendance = 0.0;
+} else {
+    s->attendance = (s->attended_classes / total_classes) * 100.0;
+}
+}
